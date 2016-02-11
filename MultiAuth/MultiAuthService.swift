@@ -16,7 +16,7 @@ protocol MultiAuthNetworkAccess {
     func logOut()
 }
 
-struct AuthenticationService {
+struct MultiAuthService {
     
     // MARK: - Public properties
     
@@ -75,8 +75,8 @@ struct AuthenticationService {
             if let returnedItems = returnedItems, extensionItem = returnedItems.first as? NSExtensionItem, itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(kUTTypePropertyList as String) {
                 itemProvider.loadItemForTypeIdentifier(kUTTypePropertyList as String, options: nil) { itemDictionary, itemProviderError in
                     if let itemDictionary = itemDictionary as? [String: String] where itemProviderError == nil {
-                        let username = itemDictionary[AuthenticationService.usernameKey]
-                        let password = itemDictionary[AuthenticationService.passwordKey]
+                        let username = itemDictionary[MultiAuthService.usernameKey]
+                        let password = itemDictionary[MultiAuthService.passwordKey]
                         self.handler?(username: username, password: password, errorMessage: nil)
                     } else {
                         print("status=failed-to-load-item error=\(itemProviderError)")
@@ -100,11 +100,11 @@ struct AuthenticationService {
 
 // MARK: - Private functions
 
-private extension AuthenticationService {
+private extension MultiAuthService {
     
     func configuredActivityViewController(URLString: String, sender: AnyObject) -> UIActivityViewController {
-        let item = [AuthenticationService.URLStringKey: URLString]
-        let itemProvider = NSItemProvider(item: item, typeIdentifier: AuthenticationService.findLoginAction)
+        let item = [MultiAuthService.URLStringKey: URLString]
+        let itemProvider = NSItemProvider(item: item, typeIdentifier: MultiAuthService.findLoginAction)
         let extensionItem = NSExtensionItem()
         extensionItem.attachments = [itemProvider]
         let keychainActivity = KeychainActivity()
@@ -120,7 +120,7 @@ private extension AuthenticationService {
     }
     
     func saveSharedCredentials(username username: String, password: String) {
-        if AuthenticationService.didRecordLogInViaSharedCredentials() { return }
+        if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
         guard let URL = NSURL(string: serverPath) else { fatalError("Invalid URL") }
         let baseURL: NSURL
         if let _baseURL = URL.baseURL {
@@ -133,7 +133,7 @@ private extension AuthenticationService {
             if let error = error {
                 print("status=failed-to-save-credentials error=\(error)")
             } else {
-                AuthenticationService.recordLogInViaSharedCredentials()
+                MultiAuthService.recordLogInViaSharedCredentials()
             }
         }
     }

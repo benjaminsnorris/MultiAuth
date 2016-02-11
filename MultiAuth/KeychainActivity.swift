@@ -18,7 +18,7 @@ class KeychainActivity: UIActivity {
     // MARK: - Required overrides
     
     override func activityType() -> String? {
-        return AuthenticationService.findLoginAction
+        return MultiAuthService.findLoginAction
     }
     
     override func activityTitle() -> String? {
@@ -31,7 +31,7 @@ class KeychainActivity: UIActivity {
     
     override func canPerformWithActivityItems(activityItems: [AnyObject]) -> Bool {
         if let extensionItem = activityItems.first as? NSExtensionItem {
-            if let itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(AuthenticationService.findLoginAction) {
+            if let itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(MultiAuthService.findLoginAction) {
                 return true
             }
         }
@@ -63,7 +63,7 @@ class KeychainActivity: UIActivity {
             }
             
             if let credential = typedCredentials.first, username = credential[kSecAttrAccount as String] as? String, password = credential[kSecSharedPassword as String] as? String {
-                AuthenticationService.recordLogInViaSharedCredentials()
+                MultiAuthService.recordLogInViaSharedCredentials()
                 self.finishActivity(username: username, password: password, success: true)
             }
         }
