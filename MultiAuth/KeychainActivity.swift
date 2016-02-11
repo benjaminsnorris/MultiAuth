@@ -10,7 +10,7 @@ import UIKit
 
 class KeychainActivity: UIActivity {
     
-    // MARK: - Public properties
+    // MARK: - Internal properties
     
     var handler: ((username: String?, password: String?, errorMessage: String?) -> ())?
     

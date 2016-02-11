@@ -11,25 +11,25 @@ import MobileCoreServices
 
 // MARK: - MultiAuth Network Access Protocol
 
-protocol MultiAuthNetworkAccess {
+public protocol MultiAuthNetworkAccess {
     func logIn(username: String, password: String, completion: (success: Bool, error: ErrorType?) -> Void)
     func logOut()
 }
 
-struct MultiAuthService {
+public struct MultiAuthService {
     
     // MARK: - Public properties
     
-    var handler: ((username: String?, password: String?, errorMessage: String?) -> ())?
+    public var handler: ((username: String?, password: String?, errorMessage: String?) -> ())?
     
     
-    // MARK: - Public constants
+    // MARK: - Internal constants
     
     static let findLoginAction = "org.appextension.find-login-action"
     static let URLStringKey = "url_string"
     
     
-    // MARK: - Constants
+    // MARK: - Private constants
     
     private static let usernameKey = "username"
     private static let passwordKey = "password"
@@ -44,7 +44,7 @@ struct MultiAuthService {
     
     // MARK: - Initializer
     
-    init(serverPath: String, networkAccess: MultiAuthNetworkAccess) {
+    public init(serverPath: String, networkAccess: MultiAuthNetworkAccess) {
         self.serverPath = serverPath
         self.networkAccess = networkAccess
     }
@@ -52,7 +52,7 @@ struct MultiAuthService {
     
     // MARK: - Public API
     
-    func logIn(username: String, password: String, completion: (error: String?) -> Void) {
+    public func logIn(username: String, password: String, completion: (error: String?) -> Void) {
         networkAccess.logIn(username, password: password) { success, error in
             if success && error == nil {
                 self.saveSharedCredentials(username: username, password: password)
@@ -65,11 +65,11 @@ struct MultiAuthService {
         }
     }
     
-    func logOut() {
+    public func logOut() {
         networkAccess.logOut()
     }
     
-    func retrieveCredentials(URLString: String, viewController: UIViewController, sender: AnyObject) {
+    public func retrieveCredentials(URLString: String, viewController: UIViewController, sender: AnyObject) {
         let activityViewController = configuredActivityViewController(URLString, sender: sender)
         activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
             if let returnedItems = returnedItems, extensionItem = returnedItems.first as? NSExtensionItem, itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(kUTTypePropertyList as String) {
@@ -89,6 +89,13 @@ struct MultiAuthService {
         }
         viewController.presentViewController(activityViewController, animated: true, completion: nil)
     }
+    
+}
+
+
+// MARK: - Internal functions
+
+extension MultiAuthService {
     
     static func recordLogInViaSharedCredentials() {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: logInViaSharedCredentialsKey)
