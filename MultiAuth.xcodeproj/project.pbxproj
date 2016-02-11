@@ -10,6 +10,8 @@
 		7002E7951C6BFEF800B3DEF3 /* MultiAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 7002E7941C6BFEF800B3DEF3 /* MultiAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7002E79C1C6BFEF800B3DEF3 /* MultiAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7002E7911C6BFEF700B3DEF3 /* MultiAuth.framework */; };
 		7002E7A11C6BFEF800B3DEF3 /* MultiAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7A01C6BFEF800B3DEF3 /* MultiAuthTests.swift */; };
+		7002E7AC1C6BFFD400B3DEF3 /* MultiAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */; };
+		7002E7AE1C6C04F700B3DEF3 /* KeychainActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +31,8 @@
 		7002E79B1C6BFEF800B3DEF3 /* MultiAuthTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultiAuthTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7002E7A01C6BFEF800B3DEF3 /* MultiAuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAuthTests.swift; sourceTree = "<group>"; };
 		7002E7A21C6BFEF800B3DEF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiAuthService.swift; sourceTree = "<group>"; };
+		7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainActivity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				7002E7941C6BFEF800B3DEF3 /* MultiAuth.h */,
+				7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */,
+				7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */,
 				7002E7961C6BFEF800B3DEF3 /* Info.plist */,
 			);
 			path = MultiAuth;
@@ -194,6 +200,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7002E7AE1C6C04F700B3DEF3 /* KeychainActivity.swift in Sources */,
+				7002E7AC1C6BFFD400B3DEF3 /* MultiAuthService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +318,7 @@
 		7002E7A61C6BFEF800B3DEF3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -320,12 +329,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = design.bsn.MultiAuth;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		7002E7A71C6BFEF800B3DEF3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -378,6 +389,7 @@
 				7002E7A71C6BFEF800B3DEF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7002E7A81C6BFEF800B3DEF3 /* Build configuration list for PBXNativeTarget "MultiAuthTests" */ = {
 			isa = XCConfigurationList;
@@ -386,6 +398,7 @@
 				7002E7AA1C6BFEF800B3DEF3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
