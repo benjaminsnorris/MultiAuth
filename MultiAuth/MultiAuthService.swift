@@ -9,11 +9,17 @@
 import UIKit
 import MobileCoreServices
 
+// MARK: - MultiAuth Network Access Protocol
+
+protocol MultiAuthNetworkAccess {
+    func logIn(username: String, password: String, completion: (success: Bool, error: ErrorType?) -> Void)
+    func logOut()
+}
+
 struct AuthenticationService {
     
     // MARK: - Public properties
     
-    var networkAccess: AuthenticationNetworkAccess = AuthenticationNetworkAPIAccess()
     var handler: ((username: String?, password: String?, errorMessage: String?) -> ())?
     
     
@@ -33,12 +39,14 @@ struct AuthenticationService {
     // MARK: - Private properties
     
     private let serverPath: String
+    private let networkAccess: MultiAuthNetworkAccess
     
     
     // MARK: - Initializer
     
-    init(serverPath: String) {
+    init(serverPath: String, networkAccess: MultiAuthNetworkAccess) {
         self.serverPath = serverPath
+        self.networkAccess = networkAccess
     }
     
     
