@@ -9,13 +9,6 @@
 import UIKit
 import MobileCoreServices
 
-// MARK: - MultiAuth Network Access Protocol
-
-public protocol MultiAuthNetworkAccess {
-    func logIn(username: String, password: String, completion: (success: Bool, error: ErrorType?) -> Void)
-    func logOut()
-}
-
 public struct MultiAuthService {
     
     // MARK: - Public properties
@@ -33,41 +26,22 @@ public struct MultiAuthService {
     
     private static let usernameKey = "username"
     private static let passwordKey = "password"
-    private static let logInViaSharedCredentialsKey = "logInViaSharedCredentials"
+    private static let logInViaSharedCredentialsKey = "MultiAuth.logInViaSharedCredentials"
     
     
     // MARK: - Private properties
     
     private let serverPath: String
-    private let networkAccess: MultiAuthNetworkAccess
     
     
     // MARK: - Initializer
     
-    public init(serverPath: String, networkAccess: MultiAuthNetworkAccess) {
+    public init(serverPath: String) {
         self.serverPath = serverPath
-        self.networkAccess = networkAccess
     }
     
     
     // MARK: - Public API
-    
-    public func logIn(username: String, password: String, completion: (error: String?) -> Void) {
-        networkAccess.logIn(username, password: password) { success, error in
-            if success && error == nil {
-                self.saveSharedCredentials(username: username, password: password)
-                completion(error: nil)
-            } else if let error = error as? NSError {
-                completion(error: error.localizedDescription)
-            } else {
-                completion(error: "Unknown error")
-            }
-        }
-    }
-    
-    public func logOut() {
-        networkAccess.logOut()
-    }
     
     public func retrieveCredentials(URLString: String, viewController: UIViewController, sender: AnyObject) {
         let activityViewController = configuredActivityViewController(URLString, sender: sender)
@@ -88,6 +62,25 @@ public struct MultiAuthService {
             }
         }
         viewController.presentViewController(activityViewController, animated: true, completion: nil)
+    }
+    
+    public func saveSharedCredentials(username username: String, password: String) {
+        if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
+        guard let URL = NSURL(string: serverPath) else { fatalError("Invalid URL") }
+        let baseURL: NSURL
+        if let _baseURL = URL.baseURL {
+            baseURL = _baseURL
+        } else {
+            baseURL = URL
+        }
+        guard let components = NSURLComponents(URL: baseURL, resolvingAgainstBaseURL: false), host = components.host else { fatalError("Could not get host from URL:\(baseURL)") }
+        SecAddSharedWebCredential(host, username, password) { error in
+            if let error = error {
+                print("status=failed-to-save-credentials error=\(error)")
+            } else {
+                MultiAuthService.recordLogInViaSharedCredentials()
+            }
+        }
     }
     
 }
@@ -124,25 +117,6 @@ private extension MultiAuthService {
             activityViewController.popoverPresentationController?.sourceRect = senderView.frame
         }
         return activityViewController
-    }
-    
-    func saveSharedCredentials(username username: String, password: String) {
-        if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
-        guard let URL = NSURL(string: serverPath) else { fatalError("Invalid URL") }
-        let baseURL: NSURL
-        if let _baseURL = URL.baseURL {
-            baseURL = _baseURL
-        } else {
-            baseURL = URL
-        }
-        guard let components = NSURLComponents(URL: baseURL, resolvingAgainstBaseURL: false), host = components.host else { fatalError("Could not get host from URL:\(baseURL)") }
-        SecAddSharedWebCredential(host, username, password) { error in
-            if let error = error {
-                print("status=failed-to-save-credentials error=\(error)")
-            } else {
-                MultiAuthService.recordLogInViaSharedCredentials()
-            }
-        }
     }
     
     static func didRecordLogInViaSharedCredentials() -> Bool {
