@@ -29,6 +29,18 @@ struct AuthenticationService {
     private static let logInViaSharedCredentialsKey = "logInViaSharedCredentials"
     
     
+    // MARK: - Private properties
+    
+    private let serverPath: String
+    
+    
+    // MARK: - Initializer
+    
+    init(serverPath: String) {
+        self.serverPath = serverPath
+    }
+    
+    
     // MARK: - Public API
     
     func logIn(username: String, password: String, completion: (error: String?) -> Void) {
@@ -100,7 +112,7 @@ private extension AuthenticationService {
     
     func saveSharedCredentials(username username: String, password: String) {
         if AuthenticationService.didRecordLogInViaSharedCredentials() { return }
-        guard let URL = NSURL(string: AppState.currentEnvironment.rawValue) else { fatalError("Invalid URL") }
+        guard let URL = NSURL(string: serverPath) else { fatalError("Invalid URL") }
         let baseURL: NSURL
         if let _baseURL = URL.baseURL {
             baseURL = _baseURL
