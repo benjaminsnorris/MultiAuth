@@ -46,14 +46,18 @@ public struct MultiAuthService {
                     if let itemDictionary = itemDictionary as? [String: String] where itemProviderError == nil {
                         let username = itemDictionary[MultiAuthService.usernameKey]
                         let password = itemDictionary[MultiAuthService.passwordKey]
-                        storedHandler(username: username, password: password, errorMessage: nil)
+                        dispatch_async(dispatch_get_main_queue(), {
+                            storedHandler(username: username, password: password, errorMessage: nil)
+                        })
                     } else {
                         print("status=failed-to-load-item error=\(itemProviderError)")
                     }
                 }
             } else {
                 print("status=failed-to-find-login URLString=\(urlString) error=\(activityError)")
-                storedHandler(username: nil, password: nil, errorMessage: nil)
+                dispatch_async(dispatch_get_main_queue(), {
+                    storedHandler(username: nil, password: nil, errorMessage: nil)
+                })
             }
         }
         viewController.presentViewController(activityViewController, animated: true, completion: nil)

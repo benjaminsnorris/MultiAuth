@@ -77,7 +77,9 @@ class KeychainActivity: UIActivity {
 private extension KeychainActivity {
     
     func finishActivity(username username: String?, password: String?, success: Bool) {
-        handler?(username: username, password: password, errorMessage: success ? nil : "No saved passwords found")
+        dispatch_async(dispatch_get_main_queue(), {
+            self.handler?(username: username, password: password, errorMessage: success ? nil : "No saved passwords found")
+        })
         self.activityDidFinish(success)
     }
     
