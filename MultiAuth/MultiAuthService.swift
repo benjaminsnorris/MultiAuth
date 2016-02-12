@@ -11,11 +11,6 @@ import MobileCoreServices
 
 public struct MultiAuthService {
     
-    // MARK: - Public properties
-    
-    public var handler: ((username: String?, password: String?, errorMessage: String?) -> ())?
-    
-    
     // MARK: - Internal constants
     
     static let findLoginAction = "org.appextension.find-login-action"
@@ -42,23 +37,23 @@ public struct MultiAuthService {
     
     
     // MARK: - Public API
-    
-    public func retrieveCredentials(URLString: String, viewController: UIViewController, sender: AnyObject) {
-        let activityViewController = configuredActivityViewController(URLString, sender: sender)
+        
+    public func retrieveCredentialsFromActivityViewController(urlString: String, fromViewController viewController: UIViewController, sender: AnyObject, storedHandler: (username: String?, password: String?, errorMessage: String?) -> ()) {
+        let activityViewController = configuredActivityViewController(urlString, sender: sender, handler: storedHandler)
         activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
             if let returnedItems = returnedItems, extensionItem = returnedItems.first as? NSExtensionItem, itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(kUTTypePropertyList as String) {
                 itemProvider.loadItemForTypeIdentifier(kUTTypePropertyList as String, options: nil) { itemDictionary, itemProviderError in
                     if let itemDictionary = itemDictionary as? [String: String] where itemProviderError == nil {
                         let username = itemDictionary[MultiAuthService.usernameKey]
                         let password = itemDictionary[MultiAuthService.passwordKey]
-                        self.handler?(username: username, password: password, errorMessage: nil)
+                        storedHandler(username: username, password: password, errorMessage: nil)
                     } else {
                         print("status=failed-to-load-item error=\(itemProviderError)")
                     }
                 }
             } else {
-                print("status=failed-to-find-login URLString=\(URLString) error=\(activityError)")
-                self.handler?(username: nil, password: nil, errorMessage: nil)
+                print("status=failed-to-find-login URLString=\(urlString) error=\(activityError)")
+                storedHandler(username: nil, password: nil, errorMessage: nil)
             }
         }
         viewController.presentViewController(activityViewController, animated: true, completion: nil)
@@ -92,7 +87,6 @@ extension MultiAuthService {
     
     static func recordLogInViaSharedCredentials() {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: logInViaSharedCredentialsKey)
-        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
 }
@@ -102,7 +96,7 @@ extension MultiAuthService {
 
 private extension MultiAuthService {
     
-    func configuredActivityViewController(URLString: String, sender: AnyObject) -> UIActivityViewController {
+    func configuredActivityViewController(URLString: String, sender: AnyObject, handler: (username: String?, password: String?, errorMessage: String?) -> ()) -> UIActivityViewController {
         let item = [MultiAuthService.URLStringKey: URLString]
         let itemProvider = NSItemProvider(item: item, typeIdentifier: MultiAuthService.findLoginAction)
         let extensionItem = NSExtensionItem()
