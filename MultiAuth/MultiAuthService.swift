@@ -26,13 +26,13 @@ public struct MultiAuthService {
     
     // MARK: - Private properties
     
-    private let serverPath: String
+    private let serverURLString: String
     
     
     // MARK: - Initializer
     
-    public init(serverPath: String) {
-        self.serverPath = serverPath
+    public init(serverURLString: String) {
+        self.serverURLString = serverURLString
     }
     
     
@@ -65,7 +65,7 @@ public struct MultiAuthService {
     
     public func saveSharedCredentials(username username: String, password: String) {
         if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
-        guard let URL = NSURL(string: serverPath) else { fatalError("Invalid URL") }
+        guard let URL = NSURL(string: serverURLString) else { fatalError("Invalid URL") }
         let baseURL: NSURL
         if let _baseURL = URL.baseURL {
             baseURL = _baseURL
