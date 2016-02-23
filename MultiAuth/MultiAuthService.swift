@@ -8,6 +8,7 @@
 
 import UIKit
 import MobileCoreServices
+import OnePasswordExtension
 
 public struct MultiAuthService {
     
@@ -19,14 +20,13 @@ public struct MultiAuthService {
     
     // MARK: - Private constants
     
-    private static let usernameKey = "username"
-    private static let passwordKey = "password"
     private static let logInViaSharedCredentialsKey = "MultiAuth.logInViaSharedCredentials"
     
     
     // MARK: - Private properties
     
     private let serverURLString: String
+    private let onePasswordExtension = OnePasswordExtension.sharedExtension()
     
     
     // MARK: - Initializer
@@ -39,28 +39,18 @@ public struct MultiAuthService {
     // MARK: - Public API
         
     public func retrieveCredentialsFromActivityViewController(urlString: String, fromViewController viewController: UIViewController, sender: AnyObject, storedHandler: (username: String?, password: String?, errorMessage: String?) -> ()) {
-        let activityViewController = configuredActivityViewController(urlString, sender: sender, handler: storedHandler)
-        activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
-            if let returnedItems = returnedItems, extensionItem = returnedItems.first as? NSExtensionItem, itemProvider = extensionItem.attachments?.first as? NSItemProvider where itemProvider.hasItemConformingToTypeIdentifier(kUTTypePropertyList as String) {
-                itemProvider.loadItemForTypeIdentifier(kUTTypePropertyList as String, options: nil) { itemDictionary, itemProviderError in
-                    if let itemDictionary = itemDictionary as? [String: String] where itemProviderError == nil {
-                        let username = itemDictionary[MultiAuthService.usernameKey]
-                        let password = itemDictionary[MultiAuthService.passwordKey]
-                        dispatch_async(dispatch_get_main_queue(), {
-                            storedHandler(username: username, password: password, errorMessage: nil)
-                        })
-                    } else {
-                        print("status=failed-to-load-item error=\(itemProviderError)")
-                    }
-                }
+        let keychainActivity = KeychainActivity()
+        keychainActivity.handler = storedHandler
+        
+        onePasswordExtension.findLoginForURLString(urlString, forViewController: viewController, sender: sender, applicationActivities: [keychainActivity]) { loginDictionary, error in
+            if let loginDictionary = loginDictionary where error == nil {
+                let username = loginDictionary[AppExtensionUsernameKey] as? String
+                let password = loginDictionary[AppExtensionPasswordKey] as? String
+                storedHandler(username: username, password: password, errorMessage: nil)
             } else {
-                print("status=failed-to-find-login URLString=\(urlString) error=\(activityError)")
-                dispatch_async(dispatch_get_main_queue(), {
-                    storedHandler(username: nil, password: nil, errorMessage: nil)
-                })
+                storedHandler(username: nil, password: nil, errorMessage: error?.localizedDescription)
             }
         }
-        viewController.presentViewController(activityViewController, animated: true, completion: nil)
     }
     
     public func saveSharedCredentials(username username: String, password: String) {
@@ -99,23 +89,6 @@ extension MultiAuthService {
 // MARK: - Private functions
 
 private extension MultiAuthService {
-    
-    func configuredActivityViewController(URLString: String, sender: AnyObject, handler: (username: String?, password: String?, errorMessage: String?) -> ()) -> UIActivityViewController {
-        let item = [MultiAuthService.URLStringKey: URLString]
-        let itemProvider = NSItemProvider(item: item, typeIdentifier: MultiAuthService.findLoginAction)
-        let extensionItem = NSExtensionItem()
-        extensionItem.attachments = [itemProvider]
-        let keychainActivity = KeychainActivity()
-        keychainActivity.handler = handler
-        let activityViewController = UIActivityViewController(activityItems: [extensionItem], applicationActivities: [keychainActivity])
-        if let barButtonItem = sender as? UIBarButtonItem {
-            activityViewController.popoverPresentationController?.barButtonItem = barButtonItem
-        } else if let senderView = sender as? UIView {
-            activityViewController.popoverPresentationController?.sourceView = senderView.superview
-            activityViewController.popoverPresentationController?.sourceRect = senderView.frame
-        }
-        return activityViewController
-    }
     
     static func didRecordLogInViaSharedCredentials() -> Bool {
         return NSUserDefaults.standardUserDefaults().boolForKey(logInViaSharedCredentialsKey)
