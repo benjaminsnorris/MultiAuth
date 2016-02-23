@@ -12,6 +12,7 @@
 		7002E7A11C6BFEF800B3DEF3 /* MultiAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7A01C6BFEF800B3DEF3 /* MultiAuthTests.swift */; };
 		7002E7AC1C6BFFD400B3DEF3 /* MultiAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */; };
 		7002E7AE1C6C04F700B3DEF3 /* KeychainActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */; };
+		70F03FBF1C7CEA9400593882 /* OnePasswordExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F03FBE1C7CEA9400593882 /* OnePasswordExtension.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		7002E7A21C6BFEF800B3DEF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiAuthService.swift; sourceTree = "<group>"; };
 		7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainActivity.swift; sourceTree = "<group>"; };
+		70F03FBE1C7CEA9400593882 /* OnePasswordExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OnePasswordExtension.framework; path = OnePasswordExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70F03FBF1C7CEA9400593882 /* OnePasswordExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +82,7 @@
 				7002E7AB1C6BFFD400B3DEF3 /* MultiAuthService.swift */,
 				7002E7AD1C6C04F700B3DEF3 /* KeychainActivity.swift */,
 				7002E7961C6BFEF800B3DEF3 /* Info.plist */,
+				70F03FC01C7CEA9C00593882 /* Frameworks */,
 			);
 			path = MultiAuth;
 			sourceTree = "<group>";
@@ -90,6 +94,15 @@
 				7002E7A21C6BFEF800B3DEF3 /* Info.plist */,
 			);
 			path = MultiAuthTests;
+			sourceTree = "<group>";
+		};
+		70F03FC01C7CEA9C00593882 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				70F03FBE1C7CEA9400593882 /* OnePasswordExtension.framework */,
+			);
+			name = Frameworks;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -324,6 +337,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Checkouts/onepassword-app-extension/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = MultiAuth/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -344,6 +361,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Checkouts/onepassword-app-extension/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = MultiAuth/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

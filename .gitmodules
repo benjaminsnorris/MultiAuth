@@ -1,0 +1,3 @@
+[submodule "Carthage/Checkouts/onepassword-app-extension"]
+	path = Carthage/Checkouts/onepassword-app-extension
+	url = https://github.com/benjaminsnorris/onepassword-app-extension.git
