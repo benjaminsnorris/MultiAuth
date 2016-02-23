@@ -46,9 +46,17 @@ public struct MultiAuthService {
             if let loginDictionary = loginDictionary where error == nil {
                 let username = loginDictionary[AppExtensionUsernameKey] as? String
                 let password = loginDictionary[AppExtensionPasswordKey] as? String
-                storedHandler(username: username, password: password, errorMessage: nil)
+                dispatch_async(dispatch_get_main_queue()) {
+                    storedHandler(username: username, password: password, errorMessage: nil)
+                }
+            } else if error?.code == Int(AppExtensionErrorCodeCancelledByUser) {
+                dispatch_async(dispatch_get_main_queue()) {
+                    storedHandler(username: nil, password: nil, errorMessage: nil)
+                }
             } else {
-                storedHandler(username: nil, password: nil, errorMessage: error?.localizedDescription)
+                dispatch_async(dispatch_get_main_queue()) {
+                    storedHandler(username: nil, password: nil, errorMessage: error?.localizedDescription)
+                }
             }
         }
     }
