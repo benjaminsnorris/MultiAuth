@@ -61,6 +61,40 @@ public struct MultiAuthService {
         }
     }
     
+    public func registerNewUser(appTitle appTitle: String, notes: String? = nil, sectionTitle: String? = nil, username: String = "", password: String = "", urlString: String, fromViewController viewController: UIViewController, sender: AnyObject, completion: (username: String?, password: String?, errorMessage: String?) -> Void) {
+        
+        var loginDetails: [String: AnyObject] = [
+            AppExtensionTitleKey: appTitle,
+            AppExtensionUsernameKey: username,
+            AppExtensionPasswordKey: password,
+        ]
+        if let notes = notes {
+            loginDetails[AppExtensionNotesKey] = notes
+        }
+        if let sectionTitle = sectionTitle {
+            loginDetails[AppExtensionSectionTitleKey] = sectionTitle
+        }
+        
+        onePasswordExtension.storeLoginForURLString(urlString, loginDetails: loginDetails, passwordGenerationOptions: nil, forViewController: viewController, sender: sender) { loginDictionary, error in
+            if let loginDictionary = loginDictionary where error == nil {
+                let username = loginDictionary[AppExtensionUsernameKey] as? String
+                let password = loginDictionary[AppExtensionPasswordKey] as? String
+                dispatch_async(dispatch_get_main_queue()) {
+                    completion(username: username, password: password, errorMessage: nil)
+                }
+            } else if error?.code == Int(AppExtensionErrorCodeCancelledByUser) {
+                dispatch_async(dispatch_get_main_queue()) {
+                    completion(username: nil, password: nil, errorMessage: nil)
+                }
+            } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    completion(username: nil, password: nil, errorMessage: error?.localizedDescription)
+                }
+            }
+        }
+
+    }
+    
     public func saveSharedCredentials(username username: String, password: String) {
         if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
         guard let URL = NSURL(string: serverURLString) else { fatalError("Invalid URL") }
