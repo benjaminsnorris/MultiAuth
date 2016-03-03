@@ -96,7 +96,7 @@ public struct MultiAuthService {
     }
     
     public func saveSharedCredentials(username username: String, password: String) {
-        if MultiAuthService.didRecordLogInViaSharedCredentials() { return }
+        guard !MultiAuthService.didRecordLogInViaSharedCredentials(username) else { return }
         guard let URL = NSURL(string: serverURLString) else { fatalError("Invalid URL") }
         let baseURL: NSURL
         if let _baseURL = URL.baseURL {
@@ -109,7 +109,7 @@ public struct MultiAuthService {
             if let error = error {
                 print("status=failed-to-save-credentials error=\(error)")
             } else {
-                MultiAuthService.recordLogInViaSharedCredentials()
+                MultiAuthService.recordLogInViaSharedCredentials(username)
             }
         }
     }
@@ -121,8 +121,10 @@ public struct MultiAuthService {
 
 extension MultiAuthService {
     
-    static func recordLogInViaSharedCredentials() {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: logInViaSharedCredentialsKey)
+    static func recordLogInViaSharedCredentials(username: String) {
+        var sharedLogIns = sharedLogInsSaved
+        sharedLogIns[username] = true
+        NSUserDefaults.standardUserDefaults().setObject(sharedLogIns, forKey: logInViaSharedCredentialsKey)
     }
     
 }
@@ -132,8 +134,14 @@ extension MultiAuthService {
 
 private extension MultiAuthService {
     
-    static func didRecordLogInViaSharedCredentials() -> Bool {
-        return NSUserDefaults.standardUserDefaults().boolForKey(logInViaSharedCredentialsKey)
+    static var sharedLogInsSaved: [String: Bool] {
+        guard let sharedLogIns = NSUserDefaults.standardUserDefaults().objectForKey(logInViaSharedCredentialsKey) as? [String: Bool] else { return [:] }
+        return sharedLogIns
+    }
+    
+    static func didRecordLogInViaSharedCredentials(username: String) -> Bool {
+        guard let sharedLogInSaved = sharedLogInsSaved[username] else { return false }
+        return sharedLogInSaved
     }
     
 }

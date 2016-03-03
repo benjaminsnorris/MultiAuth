@@ -63,7 +63,7 @@ class KeychainActivity: UIActivity {
             }
             
             if let credential = typedCredentials.first, username = credential[kSecAttrAccount as String] as? String, password = credential[kSecSharedPassword as String] as? String {
-                MultiAuthService.recordLogInViaSharedCredentials()
+                MultiAuthService.recordLogInViaSharedCredentials(username)
                 self.finishActivity(username: username, password: password, success: true)
             }
         }
