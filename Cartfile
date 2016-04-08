@@ -1,1 +1,1 @@
-github "benjaminsnorris/onepassword-app-extension" "support-application-activities-framework"
+github "benjaminsnorris/onepassword-app-extension" == 0.1 
